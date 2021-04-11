@@ -11,11 +11,11 @@ class InvoiceController extends Controller
     public function index()
     {
         $date = Carbon::now();
-        $last_month = $date->subMonth();
+        $periode = $date;
 
         $invoice = DB::table('irr5_invoice')->selectRaw('inv_no, inv_date, receive_date, receive_place, mailroom_bpn_date, spi_jkt_date, datediff(mailroom_bpn_date, receive_date) as days')
-            ->whereYear('receive_date', $last_month)
-            ->whereMonth('receive_date', $last_month)
+            ->whereYear('receive_date', $periode)
+            ->whereMonth('receive_date', $periode)
             ->where('receive_place', 'BPN')
             ->where('payment_place', 'JKT')
             ->limit(50)
@@ -24,16 +24,16 @@ class InvoiceController extends Controller
         return $invoice;
     }
 
-    public function avg_day_process()
+    public function avgDayProcessThisMonth()
     {
         $date = Carbon::now();
-        $last_month = $date->subMonths(3);
+        // $last_month = $date->subMonths(3);
 
         $get_average = DB::table('irr5_invoice')
                         ->select(DB::raw("avg(datediff(mailroom_bpn_date, receive_date)) as days"))
-                        ->whereYear('receive_date', $last_month)
-                        ->whereMonth('receive_date', $last_month)
-                        ->get();
+                        ->whereYear('receive_date', $date)
+                        ->whereMonth('receive_date', $date)
+                        ->first();
         
         $response = [
             'message' => 'Rata-rata hari proses invoice',
