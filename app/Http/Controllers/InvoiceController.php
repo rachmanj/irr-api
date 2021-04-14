@@ -13,13 +13,14 @@ class InvoiceController extends Controller
         $date = Carbon::now();
         $periode = $date;
 
-        $invoice = DB::table('irr5_invoice')->selectRaw('inv_no, inv_date, receive_date, receive_place, mailroom_bpn_date, spi_jkt_date, datediff(mailroom_bpn_date, receive_date) as days')
+        $invoice = DB::table('irr5_invoice')
             ->whereYear('receive_date', $periode)
             ->whereMonth('receive_date', $periode)
             ->where('receive_place', 'BPN')
             ->where('payment_place', 'JKT')
-            ->limit(50)
+            ->limit(10)
             ->get();
+            // ->count();
 
         return $invoice;
     }
@@ -36,7 +37,7 @@ class InvoiceController extends Controller
                         ->first();
         
         $response = [
-            'message' => 'Rata-rata hari proses invoice',
+            'message' => 'Rata-rata hari proses invoice bulan ini',
             'success' => true,
             'data' => $get_average
         ];
@@ -62,6 +63,30 @@ class InvoiceController extends Controller
             'message' => 'Rata-rata hari proses invoice bulanan',
             'success' => true,
             'data' => $get_average
+        ];
+
+        return $response;
+    }
+
+    public function invoiceByCreatorMonthly()
+    {
+        $date = Carbon::now();
+
+        $creator = DB::table('irr5_invoice')
+                        ->select(
+                            DB::raw("extract(year from receive_date) as year"),
+                            DB::raw("extract(month from receive_date) as month"),
+                            DB::raw("creator"),
+                            DB::raw("count(*) as count"),
+                        )
+                        ->whereYear('receive_date', $date)
+                        ->groupBy('year', 'month', 'creator')
+                        ->get();
+        
+        $response = [
+            'title' => 'Jumlah Invoice Berdasarkan Creator',
+            'success' => true,
+            'data' => $creator
         ];
 
         return $response;

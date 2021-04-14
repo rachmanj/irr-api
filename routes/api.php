@@ -5,8 +5,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/invoices', [InvoiceController::class, 'index']);
-Route::get('/avg_days', [InvoiceController::class, 'avgDayProcessThisMonth']);
-Route::get('/avgdays-m', [InvoiceController::class, 'avgDayProcessByMonth']);
+Route::get('/invoices/avg_days', [InvoiceController::class, 'avgDayProcessThisMonth']);
+Route::get('/invoices/avgdays-m', [InvoiceController::class, 'avgDayProcessByMonth']);
+Route::get('/invoices/countbycreator', [InvoiceController::class, 'invoiceByCreatorMonthly']);
 
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
