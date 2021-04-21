@@ -9,7 +9,6 @@ Route::get('/invoices/avg_days', [InvoiceController::class, 'avgDayProcessThisMo
 Route::get('/invoices/avgdays-m', [InvoiceController::class, 'avgDayProcessByMonth']);
 Route::get('/invoices/countbycreator', [InvoiceController::class, 'invoiceByCreatorMonthly']);
 
-
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
