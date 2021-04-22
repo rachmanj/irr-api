@@ -68,6 +68,44 @@ class InvoiceController extends Controller
         return $response;
     }
 
+    public function avgDayProcessThisYear()
+    {
+        $date = Carbon::now();
+
+        $get_average = DB::table('irr5_invoice')
+                        ->select(DB::raw("avg(datediff(mailroom_bpn_date, receive_date)) as days"))
+                        ->whereYear('receive_date', $date)
+                        ->first();
+        
+        $response = [
+            'message' => 'Average Days Invoices Process This Year',
+            'success' => true,
+            'data' => $get_average
+        ];
+
+        return $response;
+    }
+
+    public function receiveThisMonthCount()
+    {
+        $date = Carbon::now();
+
+        $get_count = DB::table('irr5_invoice')
+            ->whereYear('receive_date', $date->year)
+            ->whereMonth('receive_date', $date->month)
+            ->where('receive_place', 'BPN')
+            ->count();
+        
+        $response = [
+            'message' => 'Count Invoices Receive BPN This Month',
+            'success' => true,
+            'data' => $get_count
+        ];
+
+        return $response;
+
+    }
+
     public function invoiceByCreatorMonthly()
     {
         $date = Carbon::now();
