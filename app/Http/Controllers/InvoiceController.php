@@ -112,21 +112,67 @@ class InvoiceController extends Controller
 
         $creator = DB::table('irr5_invoice')
                         ->select(
-                            DB::raw("extract(year from receive_date) as year"),
+                            // DB::raw("extract(year from receive_date) as year"),
                             DB::raw("extract(month from receive_date) as month"),
                             DB::raw("creator"),
                             DB::raw("count(*) as count"),
                         )
                         ->whereYear('receive_date', $date)
-                        ->groupBy('year', 'month', 'creator')
+                        ->groupBy('month', 'creator')
                         ->get();
         
         $response = [
-            'title' => 'Jumlah Invoice Berdasarkan Creator',
+            'title' => 'Invoice Count By Creator This Year',
             'success' => true,
             'data' => $creator
         ];
 
         return $response;
+    }
+
+    public function thisYearMonths()
+    {
+        $date = Carbon::now();
+
+        $month = DB::table('irr5_invoice')
+            // ->select(
+            //     DB::raw("extract(month from receive_date) as month"),
+            // )
+            ->selectRaw("MONTH(receive_date) as month")
+            ->whereYear('receive_date', $date)
+            ->groupBy('month')
+            ->get();
+
+        $response = [
+            'title' => 'Invoice Count By Creator This Year',
+            'success' => true,
+            'data' => $month
+        ];
+
+        return $response;
+    }
+
+    public function thisMonthProcesed()
+    {
+        $date = Carbon::now();
+
+        $count = DB::table('irr5_invoice')
+                ->where('receive_place', 'BPN')
+                ->whereYear('receive_date', $date)
+                ->whereMonth('receive_date', $date)
+                ->whereYear('mailroom_bpn_date', $date)
+                ->whereMonth('mailroom_bpn_date', $date)
+                ->count();
+
+        $response = [
+            'title' => 'Invoices Processed This Month',
+            'success' => true,
+            'data' => $count
+        ];
+            
+        return $response;
+
+
+        
     }
 }

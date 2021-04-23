@@ -27,4 +27,5 @@ class DashboardController extends Controller
         // return $list;
         return view('dashboard.index', compact('list'));
     }
+
 }
