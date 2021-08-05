@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Invoice;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -170,9 +171,41 @@ class InvoiceController extends Controller
             'data' => $count
         ];
             
-        return $response;
+        return $response;        
+    }
 
+    public function oldInvoices()
+    {
+        $date = Carbon::now(); //->subMonths(2);
 
+        $list = DB::table('irr5_invoice')
+                ->select(DB::raw("datediff(mailroom_bpn_date, receive_date) as days"),
+                DB::raw("inv_id, receive_date, mailroom_bpn_date"))
+                ->whereYear('receive_date', $date)
+                // ->whereMonth('receive_date', $date)
+                ->whereNotNull('mailroom_bpn_date')
+                ->orderBy('days', 'desc')
+                ->get()
+                ->where('days', '>', 30);
         
+        $response =  $list;
+
+        return $response;
+    }
+
+    public function getInvoice($id)
+    {
+        $response = Invoice::select('inv_id', 'receive_date', 'mailroom_bpn_date')
+                    ->find($id);
+
+        return $response;
+    }
+
+    public function updateInvoice(Request $request, $id)
+    {
+        $invoice = Invoice::find($id);
+        $invoice->update($request->all());
+
+        return $invoice;
     }
 }

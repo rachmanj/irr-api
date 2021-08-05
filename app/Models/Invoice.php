@@ -9,5 +9,7 @@ class Invoice extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['receive_date', 'mailroom_bpn_date'];
     protected $table = 'irr5_invoice';
+    protected $primaryKey = 'inv_id';
 }
